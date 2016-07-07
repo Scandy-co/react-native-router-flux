@@ -143,17 +143,19 @@ class Actions {
       res.index = 0;
     }
     // process substates
-    for (const el of subStates) {
-      refs[el.key] = { key: el.key, name: el.key, ...el.props, type: REFRESH_ACTION,
-        base: baseKey, parent: subStateParent };
-      if (this[el.key]) {
-        console.log(`Key ${el.key} is already defined!`);
-      }
-      this[el.key] =
+    if (subStates.length) {
+      for (const el of subStates) {
+        refs[el.key] = { key: el.key, name: el.key, ...el.props, type: REFRESH_ACTION,
+                         base: baseKey, parent: subStateParent };
+        if (this[el.key]) {
+          console.log(`Key ${el.key} is already defined!`);
+        }
+        this[el.key] =
         (props = {}) => {
           assert(this.callback, 'Actions.callback is not defined!');
           this.callback({ key: el.key, type: REFRESH_ACTION, ...filterParam(props) });
         };
+      }
     }
     if (this[key]) {
       console.log(`Key ${key} is already defined!`);
