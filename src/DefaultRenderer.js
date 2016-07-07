@@ -12,7 +12,6 @@ import React, {
 } from 'react';
 import {
   Animated,
-  NavigationExperimental,
   View,
   StyleSheet,
 } from 'react-native';
@@ -21,7 +20,7 @@ import TabBar from './TabBar';
 import NavBar from './NavBar';
 import Actions from './Actions';
 import { deepestExplicitValueForKey } from './Util';
-
+import NavigationExperimental from 'react-native-experimental-navigation';
 const {
   AnimatedView: NavigationAnimatedView,
   Card: NavigationCard,
@@ -41,6 +40,38 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+function fadeInScene(/* NavigationSceneRendererProps */ props) {
+  const {
+    position,
+    scene,
+  } = props;
+
+  const index = scene.index;
+  const inputRange = [index - 1, index, index + 1];
+
+  const opacity = position.interpolate({
+    inputRange,
+    outputRange: [0, 1, 0.3],
+  });
+
+  const scale = position.interpolate({
+    inputRange,
+    outputRange: [1, 1, 0.95],
+  });
+
+  const translateY = 0;
+  const translateX = 0;
+
+  return {
+    opacity,
+    transform: [
+      { scale },
+      { translateX },
+      { translateY },
+    ],
+  };
+}
 
 export default class DefaultRenderer extends Component {
 
@@ -85,8 +116,19 @@ export default class DefaultRenderer extends Component {
     Actions.focus({ scene });
   }
 
+  chooseInterpolator(direction, props) {
+    switch (direction) {
+      case 'vertical':
+        return NavigationCardStackStyleInterpolator.forVertical(props);
+      case 'fade':
+        return fadeInScene(props);
+      default:
+        return NavigationCardStackStyleInterpolator.forHorizontal(props);
+    }
+  }
+
   renderCard(/* NavigationSceneRendererProps */ props) {
-    const { key, direction, getSceneStyle } = props.scene.navigationState;
+    const { key, direction, animation, getSceneStyle } = props.scene.navigationState;
     let { panHandlers, animationStyle } = props.scene.navigationState;
 
     const state = props.navigationState;
@@ -106,10 +148,15 @@ export default class DefaultRenderer extends Component {
 
     const isVertical = direction === 'vertical';
 
+    // direction overrides animation if both are supplied
+    const animType = (animation && !direction) ? animation : direction;
+
     if (typeof(animationStyle) === 'undefined') {
-      animationStyle = (isVertical ?
-        NavigationCardStackStyleInterpolator.forVertical(props) :
-        NavigationCardStackStyleInterpolator.forHorizontal(props));
+      animationStyle = this.chooseInterpolator(animType, props);
+    }
+
+    if (typeof(animationStyle) === 'function') {
+      animationStyle = animationStyle(props);
     }
 
     if (typeof(panHandlers) === 'undefined') {
@@ -164,21 +211,29 @@ export default class DefaultRenderer extends Component {
     const HeaderComponent = selected.navBar || child.navBar || state.navBar || NavBar;
     const navBarProps = { ...state, ...child, ...selected };
 
-    if ((selected.leftTitle || selected.leftButtonImage) && selected.onLeft) {
+    if (selected.component && selected.component.onRight) {
+      navBarProps.onRight = selected.component.onRight;
+    }
+
+    if (selected.component && selected.component.onLeft) {
+      navBarProps.onLeft = selected.component.onLeft;
+    }
+
+    if ((navBarProps.leftTitle || navBarProps.leftButtonImage) && navBarProps.onLeft) {
       delete navBarProps.leftButton;
     }
 
-    if ((selected.rightTitle || selected.rightButtonImage) && selected.onRight) {
+    if ((navBarProps.rightTitle || navBarProps.rightButtonImage) && navBarProps.onRight) {
       delete navBarProps.rightButton;
     }
 
-    if (selected.rightButton) {
+    if (navBarProps.rightButton) {
       delete navBarProps.rightTitle;
       delete navBarProps.onRight;
       delete navBarProps.rightButtonImage;
     }
 
-    if (selected.leftButton) {
+    if (navBarProps.leftButton) {
       delete navBarProps.leftTitle;
       delete navBarProps.onLeft;
       delete navBarProps.leftButtonImage;
@@ -208,11 +263,7 @@ export default class DefaultRenderer extends Component {
         <View
           style={[styles.sceneStyle, navigationState.sceneStyle]}
         >
-          <SceneComponent
-            {...navigationState}
-            onNavigate={onNavigate}
-            navigationState={navigationState}
-          />
+          <SceneComponent {...this.props} {...navigationState} />
         </View>
       );
     }

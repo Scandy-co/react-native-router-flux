@@ -1,4 +1,4 @@
-# React Native Router [![react-native-router-flux](http://img.shields.io/npm/dm/react-native-router-flux.svg)](https://www.npmjs.org/package/react-native-router-flux) [![Join the chat at https://gitter.im/aksonov/react-native-router-flux](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/aksonov/react-native-router-flux?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Codacy Badge](https://api.codacy.com/project/badge/grade/c6d869e2367a4fb491efc9de228c5ac6)](https://www.codacy.com/app/aksonov-github/react-native-router-flux) [![npm version](https://badge.fury.io/js/react-native-router-flux.svg)](http://badge.fury.io/js/react-native-router-flux)
+# React Native Router [![Join the chat at https://gitter.im/aksonov/react-native-router-flux](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/aksonov/react-native-router-flux?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Codacy Badge](https://api.codacy.com/project/badge/grade/c6d869e2367a4fb491efc9de228c5ac6)](https://www.codacy.com/app/aksonov-github/react-native-router-flux) [![npm version](https://badge.fury.io/js/react-native-router-flux.svg)](http://badge.fury.io/js/react-native-router-flux)
 
 Router for React Native based on new React Native Navigation API.
 
@@ -28,23 +28,23 @@ Router for React Native based on new React Native Navigation API.
 
 - Define scene transitions in one central location
 - Without having to pass navigator objects around, and allow you to
-- Call transitions anywhere in your code with a simple syntax (e.g. `Actions.login()`).
+- Call transitions anywhere in your code with a simple syntax (e.g. `Actions.login({username, password})` or `Actions.profile({profile})` or even `Actions.profile(123)` - all params will be part of `this.props` for given Scene component).
 
 ### New Features and Highlights
 
 - **Highly Customizable Navigation Bar** - Show/hide the navbar depending on Scene or even the state of a Scene (e.g. Edit/Save navbar for edit mode).
 
-- **Tab Bar Support** using [react-native-tab-navigator](https://github.com/exponentjs/react-native-tab-navigator) (see Example app).
+- **Tab Bar Support** using [react-native-tabs](https://github.com/aksonov/react-native-tabs) (see Example app).
 
 - **Nested Navigators** (e.g. Each tab can have its own navigator, nested in a root navigator).
 
-- **Custom Scene Renderers** for action sheet, native TabBarIOS or anything else. See built-in `Modal` renderer (to display popups) for example. *Call for PRs!* let's build some custom renderers for ActionSheet, Drawer, etc. Let's make an awesome library!
+- **Custom Scene Renderers** for action sheet, native TabBarIOS or anything else. See built-in `Modal` renderer (to display popups) for example. *Call for PRs!* let's build some custom renderers for ActionSheet, Drawer, etc. Let's make an awesome library! Currently, if you want to use Action Sheets you'll need to use a 3rd party module.
 
 - **Dynamic Routing** allows you to choose which scene to render depending on application state (see the `Switch` renderer, useful for authentication).
 
 - **Bring Your Own Reducer** for navigation state.
 
-- **Reset History Stack** - The new `reset` Action for clearing the history stack and eliminates the navbar back button.
+- **Reset History Stack** - The new [`reset`](docs/API_CONFIGURATION.md#scene)type for clearing the history stack and eliminating the navbar back button.
 
 - **More Powerful State Control** - Support for having different states while on the same screen. For example, "View My Account" could allow in-place editing of fields and "Save", "Cancel" navigation bar buttons should appear.
 
@@ -54,14 +54,9 @@ Check out the [mini-tutorial](docs/MINI_TUTORIAL.md) for a quick walkthrough of 
 
 ## Supported configurations
 
-Before instaling please refer to the following table for supported react native series
-
-| React Native - Series | React Native Router Flux - Series | Notes |
-| --- | --- | --- |
-| v0.22.x | v3.22.x |  |
-| v0.23.x,  v0.24.x & v0.25.x | **Not supported** | Please refer to [#636](https://github.com/aksonov/react-native-router-flux/issues/636) for details   |
-| v0.26.x | v3.26.x |  |
-| v0.27.x *Release Candidate* | TBD | Work in progress, currently not supported   |
+While ExperimentalNavigation API is not stable, RNRF uses separated fork of ExperimentalNavigation API to avoid dependency from React Native version.
+So 3.30 version of RNRF doesn't depend from React Native version, but from that fork (now it is based on 0.26 API).
+You could use this component with RN0.26+
 
 ## Installation
 ```
@@ -70,7 +65,7 @@ npm i react-native-router-flux --save
 
 ## Usage
 In your top-level `index.js`, define your scenes using the `Scene` component and pass it into the `Router` as children:
-```jsx
+```js
 import {Scene, Router} from 'react-native-router-flux';
 
 class App extends React.Component {
@@ -86,7 +81,7 @@ class App extends React.Component {
 }
 ```
 Alternatively, you could define all of your scenes during compile time and use it later within `Router`:
-```jsx
+```js
 import {Actions, Scene, Router} from 'react-native-router-flux';
 
 const scenes = Actions.create(
@@ -107,7 +102,7 @@ class App extends React.Component {
 ```
 
 On any Scene, you can also call the following functions by first importing the `Actions` object:
-```jsx
+```js
 import {Actions} from 'react-native-router-flux'
 ```
 And then:

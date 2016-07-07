@@ -37,6 +37,8 @@
 |-----------|--------|---------|--------------------------------------------|
 | duration | `number` | | optional. acts as a shortcut to writing an `applyAnimation` function with `Animated.timing` for a given duration (in ms). |
 | direction | `string` | 'horizontal' | direction of animation horizontal/vertical |
+| animation | `string` | | animation options when transitioning: 'fade' currently only option |
+| animationStyle | `function` | | optional interpolation function for scene transitions: `animationStyle={interpolationFunction}` |
 | applyAnimation | `function` | | optional if provided overrides the default spring animation |
 
 ### Scene styles
@@ -50,7 +52,9 @@
 |-----------|--------|---------|--------------------------------------------|
 | tabs| `bool` | false | Defines 'TabBar' scene container, so child scenes will be displayed as 'tabs'. If no `component` is defined, built-in `TabBar` is used as renderer. All child scenes are wrapped into own navbar.
 | tabBarStyle | [`View style`](https://facebook.github.io/react-native/docs/view.html#style) |  | optional style override for the Tabs component |
+| tabBarIconContainerStyle | [`View style`](https://facebook.github.io/react-native/docs/view.html#style) |  | optional style override for the View that contains each tab icon |
 | hideTabBar | `bool` | false | hides tab bar for this scene and any following scenes until explicitly reversed (if built-in TabBar component is used as parent renderer)|
+
 
 ### Navigation Bar
 | Property | Type | Default | Description |
@@ -67,6 +71,7 @@
 | getTitle | `function` | optional | Optionally closure to return a value of the title based on state |
 | renderTitle | `function` | optional | Optionally closure to render the title |
 | titleStyle | [`Text style`](https://facebook.github.io/react-native/docs/text.html#style) |  | optional style override for the title element |
+| titleOpacity | `string` | optional | Set opacity for the title in navigation bar |
 
 #### Navigation Bar: Back button
 | Property | Type | Default | Description |
@@ -75,6 +80,8 @@
 | renderBackButton | `function` | | optional closure to render back text or button if this route happens to be the previous route |
 | backButtonImage | [`Image source`](https://facebook.github.io/react-native/docs/image.html#source) | `'./back_chevron.png'` | Simple way to override the back button in the navBar |
 | backButtonTextStyle | [`Text style`](https://facebook.github.io/react-native/docs/text.html#style) | | optional style override for the back title element |
+| hideBackImage | `boolean` | false | no default back button image will be displayed |
+| onBack | `function` | Actions.pop | actions for back button |
 
 #### Navigation Bar: Left button
 | Property | Type | Default | Description |
