@@ -14,6 +14,7 @@ import { ActionMap } from './Actions';
 import { assert } from './Util';
 import { getInitialState } from './State';
 import { Platform } from 'react-native';
+require('../../babel/polyfill');
 
 // WARN: it is not working correct. rewrite it.
 function checkPropertiesEqual(action, lastAction) {
